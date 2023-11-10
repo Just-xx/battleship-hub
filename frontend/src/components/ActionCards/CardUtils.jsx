@@ -1,0 +1,114 @@
+import styled from 'styled-components';
+import illustration from "../../assets/hero-illustration.png";
+
+export const ActionWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  max-width: 500px;
+
+  @media screen and (max-width: 1400px) {
+    align-items: center;
+  }
+
+  @media screen and (max-width: 600px) {
+    align-items: start;
+  }
+`;
+
+export const Title = styled.h1`
+  margin: 0;
+  margin-bottom: 48px;
+  font-size: 1.55rem;
+  font-weight: 900;
+  opacity: 0.9;
+`;
+
+export const Illustration = styled.div`
+  aspect-ratio: 563/531.19;
+  margin-left: 64px;
+  display: block;
+  max-width: 510px;
+  width: 100%;
+  opacity: 0.8;
+  background-image: url(${illustration});
+  background-size: cover;
+
+  @media screen and (max-width: 1400px) {
+    display: none;
+  }
+`;
+
+export const InputsWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 24px;
+  margin-bottom: 32px;
+
+  @media screen and (max-width: 1400px) {
+    align-items: center;
+  }
+
+  @media screen and (max-width: 600px) {
+    align-items: start;
+  }
+`;
+
+
+
+export const ButtonsWrapper = styled(InputsWrapper)`
+  margin-bottom: 0%;
+  flex-direction: row;
+  gap: 16px;
+
+  button {
+    flex-grow: 1;
+    padding-left: 8px;
+    padding-right: 8px;
+    min-width: auto;
+  }
+`;
+
+const InputWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
+  gap: 12px;
+  width: 100%;
+
+  label {
+    font-size: 0.888rem;
+    font-weight: 700;
+    opacity: .5;
+    color: #000;
+  }
+
+  input {
+    border-radius: 10px;
+    padding: 16px;
+    outline: none;
+    border: none;
+    background-color: rgba(0, 0, 0, 0.05);
+    width: 100%;
+  }
+
+  @media screen and (max-width: 1400px) {
+    align-items: center;
+  }
+
+  @media screen and (max-width: 600px) {
+    align-items: start;
+  }
+`;
+
+export function TextInput({ label, name, ...props }) {
+  return (
+    <InputWrapper>
+      <label htmlFor={name}>{label}</label>
+      <input type="text" name={name} id={name} {...props}/>
+    </InputWrapper>
+  );
+}

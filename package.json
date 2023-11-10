@@ -1,0 +1,14 @@
+{
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "nodemon": "^3.0.1"
+  },
+  "scripts": {
+    "dev": "concurrently \"npm run start-backend\" \"npm run start-frontend\"",
+    "start-frontend": "cd frontend && npm run dev",
+    "start-backend": "cross-env NODE_ENV=DEVELOPMENT nodemon backend/index.js",
+    "build": "cd frontend && npm run build",
+    "start": "cross-env NODE_ENV=PRODUCTION node backend/index.js"
+  }
+}
