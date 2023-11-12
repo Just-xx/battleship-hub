@@ -21,8 +21,8 @@ const ShipComonn = styled.div`
 
 const ShipSmall = styled(ShipComonn)`
   background-image: url(${ship_small});
-  background-size: fill;
-  background-position: center;
+  background-size: 70%;
+  background-position: 60% 50%;
   background-repeat: no-repeat;
 `;
 

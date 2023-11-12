@@ -1,15 +1,19 @@
 const path = require("path");
 const express = require("express");
-const app = express();
-const PORT = process.env.PORT || 5000;
-const cors = require('cors')
+const cors = require("cors");
+const { createServer } = require("http");
 
+const PORT = process.env.PORT || 3000;
+
+const configureSocket = require("./app/sockets/socketHandler");
 const routes = require("./app/routes/index");
 
-console.log("ENV: " + process.env.NODE_ENV);
+const app = express();
+const server = createServer(app);
 
+configureSocket(server)
 
-app.use(cors())
+if (process.env.NODE_ENV === "DEVELOPMENT") app.use(cors());
 app.use(express.json());
 app.use("/api", routes);
 
@@ -21,6 +25,7 @@ if (process.env.NODE_ENV === "PRODUCTION") {
   );
 }
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
+  console.log("ENV: " + process.env.NODE_ENV);
   console.log(`RUNNING ON PORT: ${PORT}`);
 });

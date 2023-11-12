@@ -10,12 +10,13 @@ import {
 import ShipInfo from "./ShipInfo.jsx";
 import Ship from "./Ship.jsx";
 
+
 export default function GameCard() {
 
   const [shipsPattern, setShipsPattern] = useState([]);
 
   useEffect(() => {
-    fetch('/api/pattern', { method: "GET" })
+    fetch(`${import.meta.env.VITE_API_URL}/pattern`, { method: "GET" })
       .then(res => res.json())
       .then(data => {setShipsPattern(data)})
   }, [])
@@ -30,7 +31,7 @@ export default function GameCard() {
             ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"].map(
               (column) => (
                 <GameGridCell
-                  key={row + column}
+                  key={row + "-" + column}
                   data-row={row}
                   data-column={column}
                 ></GameGridCell>
@@ -38,7 +39,7 @@ export default function GameCard() {
             )
           )}
           <ShipsGrid>
-            {shipsPattern.map(data => <Ship {...data}/>)}
+            {shipsPattern.map(data => <Ship key={`${data.columnStart}-${data.rowStart}`} {...data}/>)}
           </ShipsGrid>
         </GameGrid>
       </InnerWrapper>
