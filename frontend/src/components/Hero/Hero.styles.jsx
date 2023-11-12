@@ -6,6 +6,7 @@ export const Wrapper = styled.div`
   justify-content: space-between;
   align-items: start;
   gap: 64px;
+  padding-bottom: 100px;
 
   @media screen and (max-width: 1200px) {
     flex-direction: column;

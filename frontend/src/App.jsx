@@ -28,7 +28,6 @@ const GlobalStyle = createGlobalStyle`
     justify-content: start;
     position: relative;
     overflow: hidden;
-    padding-bottom: 100px;
   }
 
   @media screen and (max-width: 1480px) {
@@ -74,6 +73,7 @@ function App() {
         <AppContainer>
           <Router />
         </AppContainer>
+        <ShipsBG />
       </ThemeProvider>
     </>
   );

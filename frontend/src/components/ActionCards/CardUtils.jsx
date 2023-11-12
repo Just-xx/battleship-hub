@@ -1,5 +1,8 @@
 import styled from 'styled-components';
 import illustration from "../../assets/hero-illustration.png";
+import { darken, rgba } from "polished";
+import { motion } from 'framer-motion';
+
 
 export const ActionWrapper = styled.div`
   width: 100%;
@@ -45,7 +48,6 @@ export const InputsWrapper = styled.div`
   flex-direction: column;
   width: 100%;
   gap: 24px;
-  margin-bottom: 32px;
 
   @media screen and (max-width: 1400px) {
     align-items: center;
@@ -59,9 +61,10 @@ export const InputsWrapper = styled.div`
 
 
 export const ButtonsWrapper = styled(InputsWrapper)`
-  margin-bottom: 0%;
+  margin-bottom: 0;
   flex-direction: row;
   gap: 16px;
+  margin-top: 32px;
 
   button {
     flex-grow: 1;
@@ -102,6 +105,18 @@ const InputWrapper = styled.div`
   @media screen and (max-width: 600px) {
     align-items: start;
   }
+`;
+
+export const InfoBox = styled(motion.div)`
+  padding: 16px;
+  background-color: ${({ theme }) => rgba(theme.primary, 0.1)};
+  font-size: 0.777rem;
+  line-height: 150%;
+  font-weight: 600;
+  color: ${({ theme }) => rgba(theme.primary, 0.9)};
+  border-radius: 10px;
+  margin-top: 24px;
+  width: 100%;
 `;
 
 export function TextInput({ label, name, ...props }) {

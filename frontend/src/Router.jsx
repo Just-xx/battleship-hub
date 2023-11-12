@@ -4,6 +4,7 @@ import Index from './pages/Index.jsx'
 import Play from './pages/Play.jsx'
 import Lobby from './pages/Lobby.jsx'
 import Join from './pages/Join.jsx'
+import Game from './pages/Game.jsx'
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
   {
     path: '/join',
     element: <Join />
+  },
+  {
+    path: '/game',
+    element: <Game />
   },
 ])
 
