@@ -11,15 +11,14 @@ import ShipInfo from "./ShipInfo.jsx";
 import Ship from "./Ship.jsx";
 
 
-export default function GameCard() {
+export default function GameCard({ shipsPattern }) {
 
-  const [shipsPattern, setShipsPattern] = useState([]);
 
-  useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/pattern`, { method: "GET" })
-      .then(res => res.json())
-      .then(data => {setShipsPattern(data)})
-  }, [])
+  // useEffect(() => {
+  //   fetch(`${import.meta.env.VITE_API_URL}/pattern`, { method: "GET" })
+  //     .then(res => res.json())
+  //     .then(data => {setShipsPattern(data)})
+  // }, [])
 
   return (
     <Wrapper>

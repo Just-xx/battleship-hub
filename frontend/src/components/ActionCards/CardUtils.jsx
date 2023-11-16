@@ -66,7 +66,7 @@ export const ButtonsWrapper = styled(InputsWrapper)`
   gap: 16px;
   margin-top: 32px;
 
-  button {
+  button, a {
     flex-grow: 1;
     padding-left: 8px;
     padding-right: 8px;
@@ -96,6 +96,13 @@ const InputWrapper = styled.div`
     border: none;
     background-color: rgba(0, 0, 0, 0.05);
     width: 100%;
+    transition: opacity 120ms linear;
+
+    &:disabled {
+      pointer-events: none;
+      cursor: default;
+      opacity: .8;
+    }
   }
 
   @media screen and (max-width: 1400px) {

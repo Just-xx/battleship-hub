@@ -1,20 +1,9 @@
-const { Server } = require("socket.io");
+import { roomHandler } from "./roomHandler.js";
+import { Server } from 'socket.io'
 
 function configureSocket(server) {
-  const ws = new Server(server);
-
-  ws.on("connection", (socket) => {
-    console.log("A user connected");
-
-    // Handle events and communication here
-    socket.on("message", (msg) => {
-      ws.emit("message", "MSG"); // Broadcast the message to all connected clients
-    });
-
-    socket.on("disconnect", () => {
-      console.log("User disconnected");
-    });
-  });
+  const io = new Server(server);
+  roomHandler(io);
 }
 
-module.exports = configureSocket;
+export { configureSocket }

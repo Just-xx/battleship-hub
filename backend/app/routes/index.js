@@ -1,8 +1,7 @@
-const express = require('express')
+import express from 'express';
+import { PatternController } from '../controllers/PatternContoller.js';
+
 const router = express.Router();
-
-const PatternController = require('../controllers/PatternContoller')
-
 router.get('/pattern', PatternController.generate);
 
-module.exports = router;
+export default router;

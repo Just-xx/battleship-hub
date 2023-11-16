@@ -1,9 +1,11 @@
-import React, { useEffect } from 'react'
-import GameCardPlayer from '../components/GameCard/GameCardPlayer'
-import GameCardOponnent from '../components/GameCard/GameCardOponnent'
-import styled from 'styled-components';
-import { io } from 'socket.io-client'
-
+import React, { useContext, useEffect, useState } from "react";
+import GameCardPlayer from "../components/GameCard/GameCardPlayer";
+import GameCardOponnent from "../components/GameCard/GameCardOponnent";
+import styled from "styled-components";
+import { Navigate } from "react-router-dom";
+import { socket } from "../utils/socket";
+import { RoomContext } from "../contexts/RoomContext";
+import { useNavigate } from "react-router-dom";
 
 const GameGridsWrapper = styled.div`
   display: flex;
@@ -16,31 +18,69 @@ const GameGridsWrapper = styled.div`
 `;
 
 export default function Play() {
+  const [playRedirect, setPlayRedirect] = useState(false);
+  const [roomState, dispatchRoom] = useContext(RoomContext);
+
+  const [oponnentNickname, setOponnentNickname] = useState("");
+  const [pattern, setPattern] = useState([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
+    if (!roomState.connectedToRoom) {
+      setPlayRedirect(true);
+      return () => socket.io.off();
+    }
 
-    console.log(import.meta.env.VITE_WS_URL)
-    const socket = io(`${import.meta.env.VITE_WS_URL}`);
+    socket.connectToServer();
 
-    // Handle socket events
-    socket.on('connect', () => {
-      console.log('Connected to WebSocket');
+    socket.io.emit("unfreeze", {
+      userType: roomState.userType,
+      roomId: roomState.roomId,
+      playerNickname: roomState.playerNickname,
+      hostNickname: roomState.hostNickname,
     });
 
-    socket.on('message', () => {
-      console.log('Received message');
+    socket.io.on("clientStart", () => {
+      dispatchRoom({ type: "UNFREZZE" });
+      if (roomState.userType === "host")
+        setOponnentNickname(roomState.playerNickname);
+      else if (roomState.userType === "player")
+        setOponnentNickname(roomState.hostNickname);
+
+    });
+
+    socket.io.on("pattern", payload => {
+      setPattern(payload.pattern);
+    })
+
+    socket.io.on("playerQuit", () => {
+      alert("Oponnent quit the game");
+      navigate("/create");
+    });
+
+    socket.io.on("hostQuit", () => {
+      alert("Host quit the game");
+      navigate("/join");
     });
 
     return () => {
-      // Clean up when the component unmounts
-      socket.disconnect();
+      socket.io.off();
     };
+  }, []);
+
+  useEffect(() => () => {
+    socket.io.off();
   }, [])
+
+  if (playRedirect) {
+    return <Navigate to="/play" />;
+  }
 
   return (
     <GameGridsWrapper>
-      <GameCardPlayer />
-      <GameCardOponnent />
+      <GameCardPlayer shipsPattern={pattern} />
+      <GameCardOponnent oponnentNickname={oponnentNickname} />
     </GameGridsWrapper>
-  )
+  );
 }

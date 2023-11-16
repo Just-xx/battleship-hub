@@ -1,17 +1,16 @@
-const path = require("path");
-const express = require("express");
-const cors = require("cors");
-const { createServer } = require("http");
+import path from "path";
+import express from 'express';
+import cors from 'cors';
+import { createServer } from "http";
+import { configureSocket } from "./app/sockets/socketHandler.js";
+import routes from './app/routes/index.js'
 
 const PORT = process.env.PORT || 3000;
-
-const configureSocket = require("./app/sockets/socketHandler");
-const routes = require("./app/routes/index");
 
 const app = express();
 const server = createServer(app);
 
-configureSocket(server)
+configureSocket(server);
 
 if (process.env.NODE_ENV === "DEVELOPMENT") app.use(cors());
 app.use(express.json());

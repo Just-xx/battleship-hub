@@ -49,7 +49,7 @@ export const BigButton = styled(LinkButton)`
   
   i {
     font-size: 4rem;
-    opacity: .6;
+    opacity: .8;
   
     @media screen and (max-width: 700px){
       font-size: 3.5rem;

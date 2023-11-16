@@ -38,7 +38,14 @@ export const Button = styled.button`
   cursor: pointer;
   white-space: nowrap;
 
-  transition: background-color 80ms linear;
+  transition: background-color 80ms linear, opacity 120ms linear;
+
+  &:disabled {
+    cursor: default;
+    pointer-events: none;
+    opacity: .8;
+    box-shadow: none;
+  }
 
   ${(props) =>
     props.$secondary ? secondaryHover(props) : primaryHover(props)};

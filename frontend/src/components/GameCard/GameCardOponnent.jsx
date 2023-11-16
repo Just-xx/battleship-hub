@@ -9,11 +9,11 @@ import {
 } from "./GameCard.styles.jsx";
 import ShipInfo from "./ShipInfo.jsx";
 
-export default function GameCard() {
+export default function GameCard({ oponnentNickname }) {
   return (
     <Wrapper>
       <InnerWrapper>
-        <Title>Oponnent's grid</Title>
+        <Title>{oponnentNickname}'s grid</Title>
         <ShipInfo $secondary />
         <GameGrid $secondary>
           {["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"].map((row) => 

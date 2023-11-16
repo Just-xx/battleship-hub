@@ -26,12 +26,10 @@ const conflictCheck = (generatedShip, shipsCluster) => {
 
   if (shipsCluster.length === 0) return conflict;
 
-  shipsCluster.forEach((item) => {
-
+  shipsCluster.forEach(item => {
     // loop over every ship in cluster coordinates
     for (let cellY = item.rowStart; cellY <= item.rowEnd; cellY++) {
       for (let cellX = item.columnStart; cellX <= item.columnEnd; cellX++) {
-
         // loop over generated ship coordinates
         for (
           let shipX = generatedShip.columnStart;
@@ -43,7 +41,6 @@ const conflictCheck = (generatedShip, shipsCluster) => {
             shipY <= generatedShip.rowEnd;
             shipY++
           ) {
-
             // check for direct conflicts
             if (shipX === cellX && shipY === cellY) {
               conflict = true;
@@ -63,9 +60,7 @@ const conflictCheck = (generatedShip, shipsCluster) => {
               conflict = true;
               break;
             }
-
           }
-      
         }
       }
     }
@@ -103,32 +98,30 @@ const generateRandomShip = (ship, shipsCluster) => {
   };
 };
 
-export const PatternController = {
-  generate: async (req, res) => {
-    let shipsCluster = [];
+export const generatePattern = () => {
+  let shipsCluster = [];
 
-    SHIPS_DATA.forEach((ship, index) => {
-      for (let i = 0; i < ship.quantity; i++) {
-        let generatedShip = generateRandomShip(ship, shipsCluster);
+  SHIPS_DATA.forEach((ship, index) => {
+    for (let i = 0; i < ship.quantity; i++) {
+      let generatedShip = generateRandomShip(ship, shipsCluster);
 
-        while (conflictCheck(generatedShip, shipsCluster)) {
-          generatedShip = generateRandomShip(ship, shipsCluster);
-        }
-
-        shipsCluster = [
-          ...shipsCluster,
-          {
-            type: ship.type,
-            rowStart: generatedShip.rowStart,
-            rowEnd: generatedShip.rowEnd,
-            columnStart: generatedShip.columnStart,
-            columnEnd: generatedShip.columnEnd,
-            direction: generatedShip.direction,
-          },
-        ];
+      while (conflictCheck(generatedShip, shipsCluster)) {
+        generatedShip = generateRandomShip(ship, shipsCluster);
       }
-    });
 
-    res.status(200).json(shipsCluster);
-  },
+      shipsCluster = [
+        ...shipsCluster,
+        {
+          type: ship.type,
+          rowStart: generatedShip.rowStart,
+          rowEnd: generatedShip.rowEnd,
+          columnStart: generatedShip.columnStart,
+          columnEnd: generatedShip.columnEnd,
+          direction: generatedShip.direction,
+        },
+      ];
+    }
+  });
+
+  return shipsCluster;
 };
