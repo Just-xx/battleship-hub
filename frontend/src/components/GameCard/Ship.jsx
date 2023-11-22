@@ -43,12 +43,15 @@ const ShipRegular= styled(ShipComonn)`
 `;
 
 const ShipMedium = styled(ShipRegular)`
+
+
   img {
     transform: ${props => props.$rotate ? "rotate(270deg) scale(2.4)" : "scale(0.8)"};
   }
 `;
 
 const ShipBig = styled(ShipRegular)`
+
   img {
     transform: ${props => props.$rotate ? "rotate(270deg) scale(3) scaleX(1.15)" : "scale(0.8)"};
   }

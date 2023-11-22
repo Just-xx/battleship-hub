@@ -23,6 +23,7 @@ export default function LobbyCard() {
     
     socket.io.on("connect", () => {
       socket.io.emit("createRoom");
+      dispatchRoom({ type: "RESET" });
       dispatchRoom({ type: "SET_HOST_USERTYPE" });
       dispatchRoom({ type: "CONNECT" });
     });
@@ -33,6 +34,7 @@ export default function LobbyCard() {
 
     socket.io.on("roomId", payload => {
       dispatchRoom({ type: "CONNECT_TO_ROOM", roomId: payload.roomId });
+      dispatchRoom({ type: "SET_ID", id: payload.socketId });
     });
 
     socket.io.on("playerJoin", payload => {
@@ -103,7 +105,7 @@ export default function LobbyCard() {
           />
         </InputsWrapper>
         <ButtonsWrapper>
-          <Button $small onClick={handleStart}>
+          <Button $small onClick={handleStart} disabled={!(roomState.connectedToRoom && roomState.playerNickname)}>
             Start game
           </Button>
           <LinkButton to="/play" $small $secondary>

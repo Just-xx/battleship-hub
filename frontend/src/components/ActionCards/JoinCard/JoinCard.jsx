@@ -29,12 +29,14 @@ export default function LobbyCard() {
 
   useEffect(() => {
     socket.io.on("connect", () => {
+      dispatchRoom({ type: "RESET" });
       dispatchRoom({ type: "SET_PLAYER_USERTYPE" });
       dispatchRoom({ type: "CONNECT" });
     });
 
     socket.io.on("disconnect", () => {
       dispatchRoom({ type: "RESET" });
+      setSuccesInfoShown(false);
     });
 
     socket.io.on("requestData", () => {
@@ -54,6 +56,7 @@ export default function LobbyCard() {
         setSuccesInfoShown(true);
         setFailInfoShown(false);
         dispatchRoom({ type: "CONNECT_TO_ROOM", roomId: payload.roomId });
+        dispatchRoom({ type: "SET_ID", id: payload.socketId });
       } else {
         setSuccesInfoShown(false);
         setFailInfoShown(true);

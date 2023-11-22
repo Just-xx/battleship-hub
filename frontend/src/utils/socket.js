@@ -1,4 +1,3 @@
-import { createContext, useState } from 'react'
 import { io } from 'socket.io-client';
 
 export class SocketUtilsContext {

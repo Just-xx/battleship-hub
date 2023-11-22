@@ -2,17 +2,6 @@ import styled from "styled-components";
 import { darken, lighten, rgba } from "polished";
 
 
-import ships_small_p from "../../assets/ships_p/small.svg";
-import ships_regular_p from "../../assets/ships_p/regular.svg";
-import ships_medium_p from "../../assets/ships_p/medium.svg";
-import ships_big_p from "../../assets/ships_p/big.svg";
-
-import ships_small_o from "../../assets/ships_o/small.svg";
-import ships_regular_o from "../../assets/ships_o/regular.svg";
-import ships_medium_o from "../../assets/ships_o/medium.svg";
-import ships_big_o from "../../assets/ships_o/big.svg";
-
-
 export const Wrapper = styled.section`
   flex-grow: 1;
   display: flex;
@@ -34,39 +23,17 @@ export const InnerWrapper = styled.div`
   justify-content: start;
   width: 65%;
   min-width: 300px;
+  transition: opacity 120ms linear;
+
+  opacity: ${props => props.$disabled ? 0.5 : 1};
+  pointer-events: ${props => props.$disabled ? "none" : "all"};
   
   @media screen and (max-width: 1200px) {
     width: 50%;
   }
 `;
 
-export const ShipsWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  justify-content: start;
-  gap: 12px;
-  margin-bottom: 24px;
-  width: 100%;
-  overflow-x: auto;
-`;
 
-export const ShipsTypeInfo = styled.div`
-  display: flex;
-  max-width: 100%;
-  gap: 8px;
-`;
-
-export const Ship = styled.img`
-  background-color: ${props => props.$secondary ? darken(0.05, "#fff") : rgba(props.theme.primary, 0.05)};
-  border: 1px solid ${props => props.$secondary ? darken(0.2, "#fff") : rgba(props.theme.primary, 0.2)};
-  padding: 6px;
-  border-radius: 5px;
-  height: 32px;
-  width: auto;
-  object-fit: contain;
-  display: block;
-`;
 
 export const GameGrid = styled.div`
   display: grid;
@@ -85,7 +52,8 @@ export const GameGrid = styled.div`
 
 export const GameGridCell = styled.div`
   background-color: ${(props) => props.$secondary ? "#fff" : props.theme.primary};
-  transition: 30ms linear background-color;
+  transition: 20ms linear background-color;
+  cursor: ${props => props.$secondary ? "pointer" : "default"};
 
   &:hover {
     background-color: ${(props) => props.$secondary ? darken(0.05, "#fff") : lighten(0.03, props.theme.primary)};
@@ -103,6 +71,54 @@ export const ShipsGrid = styled.div`
   height: 100%;
   pointer-events: none;
 `;
+
+export const HitGrid = styled(ShipsGrid)``;
+
+export const HitMark = styled.i`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  color: rgb(235, 64, 52, 0.8);
+  background-color: rgb(235, 64, 52, 0.1);
+
+  color: ${props => props.$player ? "rgb(235, 64, 52, 1)" : "rgb(235, 64, 52, 0.8)"};
+  background-color: ${props => props.$player ? "rgb(235, 64, 52, 0.4)": "rgb(235, 64, 52, 0.1)"};
+  border: ${props => props.$player ? "2px solid rgb(235, 64, 52, 1)" : "2px solid rgb(235, 64, 52, 0.5)"};
+
+  &::before {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    font-size: 1.222rem;
+  }
+`
+export const HitMarkStruck = styled(HitMark).attrs({ className: "fa-solid fa-xmark" })`
+  pointer-events: all;
+  cursor: default;
+`;
+
+export const HitMarkMissed = styled(HitMark).attrs({ className: "fa-solid fa-circle" })`
+  color: rgb(0, 0, 0, 0.8);
+  background-color: rgb(0, 0, 0, 0.05);
+
+  color: ${props => props.$player ? "rgb(24, 242, 235, 0.5)": "rgb(0, 0, 0, 0.7)"};
+  background-color: ${props => props.$player ? "rgb(24, 242, 235, 0.1)": "rgb(0, 0, 0, 0.05)"};
+  border: ${props => props.$player ? "1px solid rgb(24, 242, 235, 0.4)": "1px solid rgb(0, 0, 0, 0.1)"};
+
+
+  &::before {
+    font-size: 0.777rem;
+  }
+`
 
 export const Title = styled.h1`
   margin: 0;

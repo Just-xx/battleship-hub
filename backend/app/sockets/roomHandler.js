@@ -1,6 +1,5 @@
 import chalk from "chalk";
 import { Rooms } from "../utils/Rooms.js";
-import { generatePattern } from "../utils/generatePattern.js";
 
 class RoomSocketHandler {
   constructor(io, socket) {
@@ -27,7 +26,7 @@ class RoomSocketHandler {
       Rooms.create(roomId, this.socket.id);
 
       this.socket.join(roomId);
-      this.socket.emit("roomId", { roomId: String(roomId) });
+      this.socket.emit("roomId", { roomId: String(roomId), socketId: this.socket.id });
     });
   }
 
@@ -39,6 +38,7 @@ class RoomSocketHandler {
         this.socket.emit("roomId", {
           roomId: String(payload.roomId),
           success: true,
+          socketId: this.socket.id
         });
         this.socket.to(payload.roomId).emit("playerJoin", {
           id: this.socket.id,
@@ -78,13 +78,14 @@ class RoomSocketHandler {
       .emit("gameStart", Rooms.rooms[Rooms.getById(payload.roomId)]);
   }
 
-  hostDisconnects(io, playerSocketId) {
-    io.to(playerSocketId).emit("hostQuit");
+  #hostDisconnects(socket, roomId) {
+    socket.to(roomId).emit("hostQuit");
+    console.log("HOST DISCONNECTED XXX", roomId)
     // TODO: delete player from this room
   }
 
-  playerDisconnects(io, roomId) {
-    io.to(String(roomId)).emit("playerQuit");
+  #playerDisconnects(socket, roomId) {
+    socket.to(roomId).emit("playerQuit");
   }
 
   handleDisconnect() {
@@ -92,8 +93,8 @@ class RoomSocketHandler {
       Rooms.handleQuit(
         this.io,
         this.socket,
-        this.hostDisconnects,
-        this.playerDisconnects
+        this.#hostDisconnects,
+        this.#playerDisconnects
       );
     });
   }
@@ -106,39 +107,9 @@ class RoomSocketHandler {
   }
 }
 
-class GameSocketHandler {
-  constructor(io, socket) {
-    this.io = io;
-    this.socket = socket;
-  }
-
-  #handleUnfreeze() {
-    this.socket.on("unfreeze", payload => {
-      Rooms.updateUser(payload.roomId, payload.userType, this.socket.id);
-      this.socket.emit("pattern", { pattern: generatePattern() });
-
-      if (Rooms.getById(payload.roomId).freeze) {
-        this.socket.join(payload.roomId);
-        Rooms.freeze(payload.roomId, true);
-        console.log(chalk.yellow(`Room "${payload.roomId}" unfreezed`));
-      } else {
-        this.socket.join(payload.roomId);
-        console.log(chalk.yellow(`Room "${payload.roomId}" already unfreezed`));
-        this.io.to(payload.roomId).emit("clientStart");
-      }
-    });
-  }
-
-  gameHandlersSet() {
-    this.#handleUnfreeze();
-  }
-}
-
 export function roomHandler(io) {
   io.on("connection", socket => {
     const roomSocketHandler = new RoomSocketHandler(io, socket);
     roomSocketHandler.roomHandlersSet();
-    const gameSocketHandler = new GameSocketHandler(io, socket);
-    gameSocketHandler.gameHandlersSet();
   });
 }

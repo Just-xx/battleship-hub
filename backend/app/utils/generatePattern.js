@@ -1,3 +1,5 @@
+import { makeId } from "./makeId.js";
+
 const SHIPS_DATA = [
   {
     type: "small",
@@ -20,6 +22,8 @@ const SHIPS_DATA = [
     length: 4,
   },
 ];
+
+let shipId = 0;
 
 const conflictCheck = (generatedShip, shipsCluster) => {
   let conflict = false;
@@ -70,8 +74,11 @@ const conflictCheck = (generatedShip, shipsCluster) => {
 };
 
 const generateRandomShip = (ship, shipsCluster) => {
+
+  const actualId = String(shipId) + "_" + makeId(5);
   let rowStart, rowEnd, columnStart, columnEnd;
   let direction = Math.round(Math.random()); // 0 or 1; 1 = vertical, 0 = horizontal
+  shipId++;
 
   if (direction === 0) {
     rowStart = Math.round(Math.random() * (10 - 1) + 1);
@@ -95,6 +102,7 @@ const generateRandomShip = (ship, shipsCluster) => {
     columnStart,
     columnEnd,
     direction,
+    id: actualId
   };
 };
 
@@ -118,6 +126,7 @@ export const generatePattern = () => {
           columnStart: generatedShip.columnStart,
           columnEnd: generatedShip.columnEnd,
           direction: generatedShip.direction,
+          id: generatedShip.id
         },
       ];
     }
