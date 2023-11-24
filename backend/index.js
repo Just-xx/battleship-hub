@@ -4,7 +4,9 @@ import cors from 'cors';
 import { createServer } from "http";
 import { configureSocket } from "./app/sockets/socketHandler.js";
 import routes from './app/routes/index.js'
+import { fileURLToPath } from 'url';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 3000;
 
 const app = express();

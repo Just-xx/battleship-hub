@@ -33,7 +33,12 @@ export const InnerWrapper = styled.div`
   }
 `;
 
-
+export const GameGridWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  margin-top: 10%;
+`;
 
 export const GameGrid = styled.div`
   display: grid;
@@ -75,6 +80,8 @@ export const ShipsGrid = styled.div`
 export const HitGrid = styled(ShipsGrid)``;
 
 export const HitMark = styled.i`
+  pointer-events: all;
+  cursor: default;
   width: 100%;
   height: 100%;
   display: flex;
@@ -102,8 +109,6 @@ export const HitMark = styled.i`
   }
 `
 export const HitMarkStruck = styled(HitMark).attrs({ className: "fa-solid fa-xmark" })`
-  pointer-events: all;
-  cursor: default;
 `;
 
 export const HitMarkMissed = styled(HitMark).attrs({ className: "fa-solid fa-circle" })`
@@ -127,4 +132,45 @@ export const Title = styled.h1`
   font-size: 0.888rem;
   font-weight: 900;
   opacity: 0.9;
+`;
+
+export const RowSignsWrapper = styled.div`
+  display: grid;
+  height: 100%;
+  width: 10%;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(10, 1fr);
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translateX(-100%);
+`;
+
+export const ColumnSignsWrapper = styled(RowSignsWrapper)`
+  height: 10%;
+  width: 100%;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: 1fr;
+  left: 0;
+  top: 0;
+  transform: translateY(-100%);
+`;
+
+export const LetterSign = styled.div`
+  font-size: 0.555rem;
+  font-weight: 700;
+  opacity: .5;
+  user-select: none;
+  color: #000;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+`;
+
+export const NumberSign = styled(LetterSign)`
+  transform-origin: center;
+  transform: rotate(-90deg);
 `;

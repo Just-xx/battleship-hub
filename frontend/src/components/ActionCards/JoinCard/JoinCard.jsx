@@ -82,6 +82,7 @@ export default function LobbyCard() {
   }, [nickname, inputRoomId, successInfoShown, roomState]);
 
   useEffect(() => {
+    dispatchRoom({ type: "RESET" });
     return () => {
       socket.disconnectFromServer()();
       dispatchRoom({ type: "RESET" });
@@ -127,9 +128,10 @@ export default function LobbyCard() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              $animate
             >
               You are in game ({roomState.roomId})<br />
-              Wait for host to start the game...
+              Wait for host to start the game
             </InfoBox>
           )}
           {failInfoShown && (

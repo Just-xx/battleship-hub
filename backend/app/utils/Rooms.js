@@ -1,37 +1,13 @@
 import chalk from "chalk";
 
- 
 export class Rooms {
   static rooms = [];
 
-  static logRooms() {
-    if (this.rooms.length > 0) {
-      console.log("---------ROOMS---------");
-      this.rooms.forEach((room, i) => {
-        console.log(
-          `ROOM ${chalk.green(i)}: ${chalk.yellow(
-            room.id
-          )} USERS(${chalk.yellow(room.users.length)}): ${chalk.yellow(
-            room.users.join(", ")
-          )}`
-        );
-        console.log(
-          `PLAYERNICK: ${chalk.yellow(
-            room.playerNickname
-          )} HOSTNICK: ${chalk.yellow(room.hostNickname)}`
-        );
-      });
-      console.log("-----------------------");
-    } else {
-      console.log("-------------");
-      console.log("NO ROOMS");
-      console.log("-------------");
-    }
-  }
-
   static updateRoom(roomId, newRoomState) {
-    this.rooms = this.rooms.map(room => room.id === roomId ? newRoomState : room)
-  } 
+    this.rooms = this.rooms.map(room =>
+      room.id === roomId ? newRoomState : room
+    );
+  }
 
   static create(newRoomId, userId) {
     this.rooms = [
@@ -69,7 +45,7 @@ export class Rooms {
   }
 
   static getBySocketId(socketId) {
-    return this.rooms.find(room => room.users.indexOf(socketId) + 1)
+    return this.rooms.find(room => room.users.indexOf(socketId) + 1);
   }
 
   static isLobbyComplete(roomId) {
@@ -96,7 +72,19 @@ export class Rooms {
         ) > 0
     );
 
-    if (roomIndexByHost + 1 && !this.rooms[roomIndexByHost]?.freeze) {
+    if (
+      (roomIndexByHost + 1 || roomIndexByPlayer + 1) &&
+      (this.rooms[roomIndexByHost]?.freeze ||
+        this.rooms[roomIndexByPlayer]?.freeze)
+    ) {
+      return console.log(
+        chalk.yellow(
+          `User "${socketId}" disconnected from websocket, but room is frezzed, that means game is starting`
+        )
+      );
+    }
+
+    if (roomIndexByHost + 1) {
       hostDisconnects(socket, this.rooms[roomIndexByHost].id);
       this.rooms = this.rooms.filter((room, i) => i !== roomIndexByHost);
 
@@ -105,11 +93,8 @@ export class Rooms {
           `Host "${socketId}" disconnected and room ${roomIndexByHost} was deleted`
         )
       );
-    } else if (
-      roomIndexByPlayer + 1 &&
-      !this.rooms[roomIndexByPlayer]?.freeze
-    ) {
-      this.rooms = this.rooms.map((room, i) => {
+    } else if (roomIndexByPlayer + 1) {
+      this.rooms = this.rooms.map(room => {
         const cleanedUsers = room.users.filter(userId => userId !== socketId);
         return { ...room, users: cleanedUsers };
       });
@@ -118,16 +103,6 @@ export class Rooms {
       console.log(
         chalk.red(
           `Player "${socketId}" disconnects from room ${roomIndexByPlayer}`
-        )
-      );
-    } else if (
-      (roomIndexByHost + 1 || roomIndexByPlayer + 1) &&
-      (this.rooms[roomIndexByHost]?.freeze ||
-        this.rooms[roomIndexByPlayer]?.freeze)
-    ) {
-      console.log(
-        chalk.yellow(
-          "User disconnected from websocket, but room is frezzed, that means game is starting"
         )
       );
     } else {
@@ -147,9 +122,11 @@ export class Rooms {
   }
 
   static updateUser(roomId, userType, socketId, prevSocketId) {
+
+    console.log("PREV: " + prevSocketId)
+    
     const replaceUser = (room, comperison) => {
       return room.users.map(userId => {
-        console.log(userId, socketId);
         if (userId === comperison) {
           return socketId;
         } else {
@@ -176,24 +153,33 @@ export class Rooms {
   static addPattern(roomId, socketId, userType, pattern) {
     let newRoomState = this.getById(roomId);
 
-    newRoomState = {...newRoomState, patterns: newRoomState?.patterns || []};
-    newRoomState.patterns = [...newRoomState.patterns, {
-      id: socketId,
-      pattern,
-      userType
-    }]
+    newRoomState = { ...newRoomState, patterns: newRoomState?.patterns || [] };
+    newRoomState.patterns = [
+      ...newRoomState.patterns,
+      {
+        id: socketId,
+        pattern,
+        userType,
+      },
+    ];
 
-    this.updateRoom(roomId, newRoomState)
+    this.updateRoom(roomId, newRoomState);
   }
 
   static changeTurn(roomId) {
     const room = this.getById(roomId);
-    this.updateRoom(roomId, {...room, turn: room.turn === "player" ? "host" : "player"});
+    this.updateRoom(roomId, {
+      ...room,
+      turn: room.turn === "player" ? "host" : "player",
+    });
   }
 
   static setRandomTurn(roomId) {
     const rand = Math.round(Math.random());
-    this.updateRoom(roomId, {...this.getById(roomId), turn: rand ? "player" : "host"})
+    this.updateRoom(roomId, {
+      ...this.getById(roomId),
+      turn: rand ? "player" : "host",
+    });
   }
 
   static getTurn(roomId) {
@@ -201,46 +187,49 @@ export class Rooms {
   }
 
   static addHit(roomId, socketId, x, y, ship) {
-
-    
-    let room = this.getBySocketId(socketId)
+    let room = this.getBySocketId(socketId);
     const userType = socketId === room.hostId ? "host" : "player";
 
-    // B u g    h e r e
     if (!room.hits) {
-      room = {...room, hits: [{
-        userType,
-        socketId: socketId,
-        shipId: ship.id,
-        coords: [{ x, y, shipType: ship.type }]
-      }]}
-    }
-    else {
-      const roomHitsIndex = room.hits.findIndex(hit => hit.id === socketId);
+      room = {
+        ...room,
+        hits: [
+          {
+            userType,
+            socketId: socketId,
+            shipId: ship.id,
+            shipType: ship.type,
+            coords: [{ x, y }],
+          },
+        ],
+      };
+    } else {
+      const roomHitsIndex = room.hits.findIndex(hit => hit.shipId === ship.id);
 
       if (roomHitsIndex + 1) {
-        const newHits = room.hits.map((hit, i) => {
-          if (i === roomHitsIndex) {
-            return hit
-          }
-        })
-      }
-      else {
-        room = {...room, hits: [...room.hits, {
-          userType,
-          id: socketId,
-          coords: [{ x, y, shipType: ship.type }]
-        }]}
+        room.hits[roomHitsIndex] = {
+          ...room.hits[roomHitsIndex],
+          coords: [...room.hits[roomHitsIndex].coords, { x, y }],
+        };
+      } else {
+        room.hits = [
+          ...room.hits,
+          {
+            userType,
+            socketId: socketId,
+            shipId: ship.id,
+            shipType: ship.type,
+            coords: [{ x, y }],
+          },
+        ];
       }
     }
 
-
-    console.log(this.rooms);
     this.updateRoom(roomId, room);
   }
 
   static checkForHit(roomId, socketId, x, y) {
-    const room = this.getBySocketId(socketId)
+    const room = this.getBySocketId(socketId);
     const patternData = room.patterns.find(pattern => pattern.id !== socketId);
     let hittedShip = false;
 
@@ -249,23 +238,83 @@ export class Rooms {
         for (let shipY = ship.rowStart; shipY <= ship.rowEnd; shipY++) {
           if (x === shipX && y === shipY) {
             hittedShip = { hit: true, ship };
-            this.addHit(roomId, socketId, x, y, ship)
+
+            if (this.getById(roomId)?.hits) {
+              this.getById(roomId).hits.forEach(hit => {
+                if (hit.socketId !== socketId && hit.shipId === ship.id) {
+                  hit.coords.forEach(coord => {
+                    if (coord.x === x && coord.y === y) {
+                      hittedShip = { hit: false, alreadyHitted: true };
+                    }
+                  });
+                }
+              });
+            }
           }
         }
       }
-    })
-    
+    });
+
+    if (hittedShip?.hit) {
+      this.addHit(roomId, this.getOponnentId(socketId), x, y, hittedShip.ship);
+    }
+
     return hittedShip;
   }
 
-  static getOponentId(socketId) {
-    const oponnentSocket = this.getBySocketId(socketId).users.find(userId => userId !== socketId);
+  static checkForWin(roomId, socketId) {
+    if (this.getById(roomId)?.hits) {
+      const hits = this.getById(roomId).hits.filter(
+        hit => hit.socketId !== socketId
+      );
+
+      const shipsCoords = this.getOpoenntPattern(socketId).map(ship => {
+        let shipCoords = [];
+        for (let shipX = ship.columnStart; shipX <= ship.columnEnd; shipX++) {
+          for (let shipY = ship.rowStart; shipY <= ship.rowEnd; shipY++) {
+            shipCoords.push({ x: shipX, y: shipY });
+          }
+        }
+        return shipCoords;
+      }).flat();
+
+
+      const checkTable = shipsCoords.map(shipCoord => {
+        let checked = false;
+        hits.forEach(hit => {
+          hit.coords.forEach(coord => {
+            if (coord.x === shipCoord.x && coord.y === shipCoord.y) {
+              checked = true;
+            }
+          })
+        });
+        return checked;
+      });
+
+
+      if (checkTable.filter(check => !check).length === 0) {
+        return true;
+      }
+      return false;
+    }
+  }
+
+  static getOponnentId(socketId) {
+    if (!this.getBySocketId(socketId)) {
+      console.log(socketId);
+      throw new Error("Room wasn't found")
+    }
+    const oponnentSocket = this.getBySocketId(socketId).users.find(
+      userId => userId !== socketId
+    );
     return oponnentSocket;
   }
 
   static getOpoenntPattern(socketId) {
-    const oponnentSocket = this.getOponentId(socketId);
-    const oponnentPatern = this.getBySocketId(socketId).patterns.find(pattern => pattern.id === oponnentSocket);
+    const oponnentSocket = this.getOponnentId(socketId);
+    const oponnentPatern = this.getBySocketId(socketId).patterns.find(
+      pattern => pattern.id === oponnentSocket
+    );
     return oponnentPatern.pattern;
   }
 }

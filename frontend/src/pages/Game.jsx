@@ -6,6 +6,7 @@ import { socket } from "../utils/socket";
 import { RoomContext } from "../contexts/RoomContext";
 import { useNavigate } from "react-router-dom";
 import { stringIntoNumber } from "../utils/stringIntoNumber";
+import Modal from '../components/Modal/Modal';
 
 const GameGridsWrapper = styled.div`
   display: flex;
@@ -20,7 +21,9 @@ const GameGridsWrapper = styled.div`
 export default function Play() {
   const [roomState, dispatchRoom] = useContext(RoomContext);
   const [oponnentNickname, setOponnentNickname] = useState("");
-  const [turn, setTurn] = useState('');
+  const [won, setWon] = useState(false);
+  const [lost, setLost] = useState(false);
+  const [connectionLost, setconnectionLost] = useState(false);
 
   const navigate = useNavigate();
 
@@ -67,16 +70,16 @@ export default function Play() {
 
     socket.io.on("playerQuit", () => {
       socket.disconnectFromServer()();
-      alert("Oponnent quit the game");
+      setconnectionLost(true);
     });
 
     socket.io.on("hostQuit", () => {
       socket.disconnectFromServer()();
-      alert("Host quit the game");
+      setconnectionLost(true);
     });
-
+    
     socket.io.on("disconnect", () => {
-      alert("Disconnected from server")
+      setconnectionLost(true);
     });
 
     socket.io.on("hit", payload => {
@@ -92,6 +95,14 @@ export default function Play() {
           dispatchRoom({ type: "ADD_STRUCK", id: payload.ship.id, shipType: payload.ship.type })
         }
       }
+    })
+
+    socket.io.on("win", () => {
+      setWon(true);
+    })
+
+    socket.io.on("lost", () => {
+      setLost(true);
     })
 
     return () => {
@@ -116,9 +127,16 @@ export default function Play() {
   }
 
   return (
-    <GameGridsWrapper>
-      <GameCardPlayer hits={roomState.hits} shipsPattern={roomState.pattern} />
-      <GameCardOponnent oponnentHits={roomState.oponnentHits} disabled={roomState.userType !== roomState.turn} handleGuess={handleGuess} oponnentNickname={oponnentNickname} />
-    </GameGridsWrapper>
+    <>
+      <GameGridsWrapper>
+        <GameCardPlayer hits={roomState.hits} shipsPattern={roomState.pattern} />
+        <GameCardOponnent oponnentHits={roomState.oponnentHits} disabled={roomState.userType !== roomState.turn} handleGuess={handleGuess} oponnentNickname={oponnentNickname} />
+      </GameGridsWrapper>
+      <Modal visible={won} text="You won the game" buttonText="Back to menu" action={() => navigate("/play")} />
+      <Modal visible={lost} text="You lost the game" buttonText="Back to menu" action={() => navigate("/play")} />
+      {(!lost && !won) && (
+        <Modal visible={connectionLost} text="Connection lost" buttonText="Back to menu" action={() => navigate("/play")} />
+      )}
+    </>
   );
 }

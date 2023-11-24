@@ -11,14 +11,15 @@ class GameSocketHandler {
   #handleUnfreeze() {
     this.socket.on("unfreeze", payload => {
 
-
-
       Rooms.updateUser(
         payload.roomId,
         payload.userType,
         this.socket.id,
         payload.prevSocketId
       );
+
+      console.log("PAYLOAD UNFREEZE")
+      console.dir(payload)
 
       const newPattern = generatePattern();
       this.socket.emit("pattern", { pattern: newPattern });
@@ -44,13 +45,13 @@ class GameSocketHandler {
         this.io
           .to(payload.roomId)
           .emit("turn", { turn: Rooms.getTurn(payload.roomId) });
-        
+
         this.io
           .to(this.socket.id)
           .emit("oponnentPattern", Rooms.getOpoenntPattern(this.socket.id).map(ship => ({ type: ship.type, id: ship.id })))
         
         this.io
-          .to(Rooms.getOponentId(this.socket.id))
+          .to(Rooms.getOponnentId(this.socket.id))
           .emit("oponnentPattern", newPattern.map(ship => ({ type: ship.type, id: ship.id })))
       }
     });
@@ -65,11 +66,17 @@ class GameSocketHandler {
           payload.x,
           payload.y
         );
+        if (hitResult?.alreadyHitted) return;
 
+        const win = Rooms.checkForWin(payload.roomId, this.socket.id);
         const hostId = Rooms.getBySocketId(this.socket.id).hostId;
 
+        if (win) {
+          this.socket.emit('win');
+          this.socket.to(payload.roomId).emit('lost');
+        }
+        
         if (hitResult?.hit) {
-          console.log("HIT", hitResult.ship)
           this.io.to(payload.roomId).emit("hit", {
             ship: hitResult.ship,
             senderId: this.socket.id,

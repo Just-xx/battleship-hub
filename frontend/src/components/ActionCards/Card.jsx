@@ -7,8 +7,8 @@ const Wrapper = styled.section`
   padding: 64px;
   background-color: #fff;
   border-radius: 20px;
-  box-shadow: 6px 6px 25px 0px rgba(0, 0, 0, 0.01),
-    2px 2px 4px 0px rgba(0, 0, 0, 0.02);
+  box-shadow: 6px 6px 25px 0px rgba(0, 0, 0, 0.05),
+    2px 2px 4px 0px rgba(0, 0, 0, 0.05);
   display: flex;
   justify-content: space-between;
   align-items: center;

@@ -28,7 +28,7 @@ export const Button = styled.button`
   font-weight: 800;
   border: ${(props) =>
     props.$secondary ? "1px solid rgba(78, 43, 37, 0.30)" : "none"};
-  border-radius: 15px;
+  border-radius: 12px;
   box-shadow: ${(props) =>
     props.$secondary
       ? "none"

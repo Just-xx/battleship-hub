@@ -1,28 +1,18 @@
 import chalk from "chalk";
 import { Rooms } from "../utils/Rooms.js";
+import { makeId } from "../utils/makeId.js";
 
 class RoomSocketHandler {
   constructor(io, socket) {
     this.io = io;
     this.socket = socket;
+    this.makeId = makeId;
   }
 
-  #makeId(length) {
-    let result = "";
-    const characters =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    const charactersLength = characters.length;
-    let counter = 0;
-    while (counter < length) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-      counter += 1;
-    }
-    return result;
-  }
 
   handleCreatingRoom() {
     this.socket.on("createRoom", () => {
-      const roomId = this.#makeId(8);
+      const roomId = this.makeId(12);
       Rooms.create(roomId, this.socket.id);
 
       this.socket.join(roomId);
@@ -80,8 +70,7 @@ class RoomSocketHandler {
 
   #hostDisconnects(socket, roomId) {
     socket.to(roomId).emit("hostQuit");
-    console.log("HOST DISCONNECTED XXX", roomId)
-    // TODO: delete player from this room
+    // delete player from this room
   }
 
   #playerDisconnects(socket, roomId) {

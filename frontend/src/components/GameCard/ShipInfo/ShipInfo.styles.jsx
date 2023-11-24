@@ -8,7 +8,7 @@ export const ShipsWrapper = styled.div`
   align-items: start;
   justify-content: start;
   gap: 12px;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   width: 100%;
   overflow-x: auto;
 `;
@@ -53,9 +53,12 @@ export const ShipInfoItemStrucks = styled.div`
 
 export const ShipHitMarkStruck = styled(HitMarkStruck)`
   opacity: 1;
-  border-color: transparent;
+
+  color: rgb(235, 64, 52, 1);
+  background-color: rgb(235, 64, 52, 0.05);
+  border: 2px solid rgb(235, 64, 52, 0.2);
 
   &::before {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
   }
 `;

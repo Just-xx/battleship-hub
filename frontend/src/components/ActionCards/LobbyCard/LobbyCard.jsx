@@ -12,7 +12,7 @@ import { Button, LinkButton } from "../../Button/Button";
 import { socket } from "../../../utils/socket";
 import { RoomContext } from "../../../contexts/RoomContext";
 import { useNavigate } from "react-router-dom";
-
+import { toast } from "react-toastify";
 
 export default function LobbyCard() {
   const [nickname, setNickname] = useState("Player1");
@@ -20,7 +20,6 @@ export default function LobbyCard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    
     socket.io.on("connect", () => {
       socket.io.emit("createRoom");
       dispatchRoom({ type: "RESET" });
@@ -62,11 +61,13 @@ export default function LobbyCard() {
       dispatchRoom({ type: "PLAYER_QUIT" });
     });
 
-    return () => { socket.io.off() };
+    return () => {
+      socket.io.off();
+    };
   }, [nickname, roomState]);
 
   useEffect(() => {
-
+    dispatchRoom({ type: "RESET" });
     socket.connectToServer();
 
     return () => {
@@ -79,6 +80,19 @@ export default function LobbyCard() {
   const handleStart = () => {
     socket.io.emit("requestStart", { roomId: roomState.roomId });
   };
+
+  function handleCodeCopy() {
+    const textToCopy = roomState.roomId;
+
+    navigator.clipboard
+      .writeText(textToCopy)
+      .then(() => {
+        toast.info("Code copied")
+      })
+      .catch(err => {
+        console.error("Failed to copy text: ", err);
+      });
+  }
 
   return (
     <Card>
@@ -94,8 +108,9 @@ export default function LobbyCard() {
           <TextInput
             label="Game code"
             name="gamecode"
-            disabled
-            value={roomState.roomId || "-"}
+            value={roomState.roomId || "generating..."}
+            copy
+            onClick={handleCodeCopy}
           />
           <TextInput
             label="Oponnent"
@@ -105,7 +120,11 @@ export default function LobbyCard() {
           />
         </InputsWrapper>
         <ButtonsWrapper>
-          <Button $small onClick={handleStart} disabled={!(roomState.connectedToRoom && roomState.playerNickname)}>
+          <Button
+            $small
+            onClick={handleStart}
+            disabled={!(roomState.connectedToRoom && roomState.playerNickname)}
+          >
             Start game
           </Button>
           <LinkButton to="/play" $small $secondary>
