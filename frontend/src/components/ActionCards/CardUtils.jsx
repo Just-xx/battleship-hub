@@ -137,6 +137,12 @@ const InputWrapper = styled.div`
       opacity: 0.8;
       border-color: transparent;
     }
+
+    &::placeholder {
+      opacity: .25;
+      font-weight: 500;
+      color: #000;
+    }
   }
 
   @media screen and (max-width: 1400px) {
@@ -184,6 +190,9 @@ export const InfoBox = styled(motion.div)`
 `;
 
 export function TextInput({ label, name, copy, onClick, ...props }) {
+
+  
+
   return (
     <InputWrapper onClick={onClick} $copy={copy}>
       <label htmlFor={name}>{label}</label>

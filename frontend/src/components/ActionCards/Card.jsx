@@ -12,6 +12,7 @@ const Wrapper = styled.section`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 64px;
 
   @media screen and (max-width: 1400px) {
     text-align: center;

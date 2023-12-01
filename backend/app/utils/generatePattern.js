@@ -97,6 +97,7 @@ const generateRandomShip = (ship, shipsCluster) => {
   }
 
   return {
+    length: ship.length,
     rowStart,
     rowEnd,
     columnStart,
@@ -126,7 +127,8 @@ export const generatePattern = () => {
           columnStart: generatedShip.columnStart,
           columnEnd: generatedShip.columnEnd,
           direction: generatedShip.direction,
-          id: generatedShip.id
+          id: generatedShip.id,
+          length: generatedShip.length
         },
       ];
     }

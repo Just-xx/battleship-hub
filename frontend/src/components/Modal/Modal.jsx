@@ -3,7 +3,7 @@ import { Wrapper, Dimm, Text } from "./Modal.styles";
 import { AnimatePresence } from "framer-motion";
 import { Button } from "../Button/Button";
 
-export default function Modal({ text, buttonText, action, visible }) {
+export default function Modal({ text, buttonText, action, visible, custom, children }) {
   return (
     <AnimatePresence>
       {visible && (
@@ -30,10 +30,14 @@ export default function Modal({ text, buttonText, action, visible }) {
               translateX: "-50%",
             }}
           >
-            <Text>{text}</Text>
-            <Button $secondary onClick={action}>
-              {buttonText}
-            </Button>
+            {custom ? children : (
+              <>
+                <Text>{text}</Text>
+                <Button $secondary onClick={action}>
+                  {buttonText}
+                </Button>
+              </>
+            )}
           </Wrapper>
         </>
       )}

@@ -7,6 +7,7 @@ export const Wrapper = styled.div`
   align-items: start;
   gap: 64px;
   padding-bottom: 100px;
+  margin-bottom: 64px;
 
   @media screen and (max-width: 1200px) {
     flex-direction: column;
@@ -42,6 +43,7 @@ export const ActionWrapper = styled.div`
   flex-direction: column;
   gap: 64px;
   margin-top: 64px;
+  position: relative;
 
   @media screen and (max-width: 1480px) {
     gap: 48px;
@@ -121,5 +123,19 @@ export const MobileButtonsWrapper = styled.div`
 
   @media screen and (max-width: 1200px) {
     display: flex;
+  }
+`;
+
+export const GridBgImg = styled.img`
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateY(100%) translateX(-50%);
+  max-width: 400px;
+  width: 25vw;
+  aspect-ratio: 1;
+
+  @media screen and (max-width: 1200px) {
+    display: none;
   }
 `;

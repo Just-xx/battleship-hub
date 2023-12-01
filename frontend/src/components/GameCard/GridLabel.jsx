@@ -11,12 +11,12 @@ export default function GridLabel() {
     <>
       <RowSignsWrapper>
         {["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"].map(num => (
-          <NumberSign>{num}</NumberSign>
+          <NumberSign key={num}>{num}</NumberSign>
         ))}
       </RowSignsWrapper>
       <ColumnSignsWrapper>
         {["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"].map(num => (
-          <LetterSign>{num}</LetterSign>
+          <LetterSign key={num}>{num}</LetterSign>
         ))}
       </ColumnSignsWrapper>
     </>

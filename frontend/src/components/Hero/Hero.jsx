@@ -7,11 +7,13 @@ import {
   IllustrationWrapper,
   Illustration,
   IllustrationBadge,
-  MobileButtonsWrapper
+  MobileButtonsWrapper,
+  GridBgImg
 } from "./Hero.styles";
 import { H1, H3 } from "../Headings/Headings";
 import { LinkButton } from "../Button/Button";
 import illustration from "../../assets/hero-illustration.png";
+import grid_bg from '../../assets/grid_bg.svg'
 
 export default function Hero() {
   return (
@@ -27,6 +29,7 @@ export default function Hero() {
             Rules
           </LinkButton>
         </ButtonsWrapper>
+        <GridBgImg src={grid_bg} />
       </ActionWrapper>
       <IllustrationWrapper>
         <Illustration draggable="false" src={illustration} alt="" />

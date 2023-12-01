@@ -3,7 +3,8 @@ import Router from "./Router";
 import ShipsBG from "./components/ShipsBG/ShipsBG";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { GlobalStyle, AppContainer } from "./App.styles";
-import { RoomContextProvider, useRoomReducer } from "./contexts/RoomContext";
+import { RoomContextProvider } from "./contexts/RoomContext";
+import { useRoomReducer } from "./hooks/useRoomReducer";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -14,13 +15,13 @@ const theme = {
 };
 
 function App() {
-  const [roomState, dispatchRoom] = useRoomReducer();
+  const {roomState, dispatchRoom} = useRoomReducer();
 
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={theme}>
         <GlobalStyle />
-        <RoomContextProvider value={[roomState, dispatchRoom]}>
+        <RoomContextProvider value={{roomState, dispatchRoom}}>
           <AppContainer>
             <Router />
           </AppContainer>

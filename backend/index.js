@@ -2,7 +2,7 @@ import path from "path";
 import express from 'express';
 import cors from 'cors';
 import { createServer } from "http";
-import { configureSocket } from "./app/sockets/socketHandler.js";
+import wsController from "./app/websocket/wsContoller.js";
 import routes from './app/routes/index.js'
 import { fileURLToPath } from 'url';
 
@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 const server = createServer(app);
 
-configureSocket(server);
+wsController(server);
 
 if (process.env.NODE_ENV === "DEVELOPMENT") app.use(cors());
 app.use(express.json());

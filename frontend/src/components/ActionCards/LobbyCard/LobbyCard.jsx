@@ -9,85 +9,88 @@ import {
   ButtonsWrapper,
 } from "../CardUtils";
 import { Button, LinkButton } from "../../Button/Button";
-import { socket } from "../../../utils/socket";
+import SocketIOService from "../../../services/SocketIOService";
 import { RoomContext } from "../../../contexts/RoomContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 export default function LobbyCard() {
-  const [nickname, setNickname] = useState("Player1");
-  const [roomState, dispatchRoom] = useContext(RoomContext);
+  const [nickname, setNickname] = useState("");
+  const {roomState, dispatchRoom} = useContext(RoomContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    socket.io.on("connect", () => {
-      socket.io.emit("createRoom");
+    SocketIOService.io.on("connect", () => {
       dispatchRoom({ type: "RESET" });
       dispatchRoom({ type: "SET_HOST_USERTYPE" });
       dispatchRoom({ type: "CONNECT" });
+      SocketIOService.io.emit("createRoomReq");
     });
 
-    socket.io.on("disconnect", () => {
+    SocketIOService.io.on("disconnect", () => {
       disconnectRoomState();
     });
 
-    socket.io.on("roomId", payload => {
-      dispatchRoom({ type: "CONNECT_TO_ROOM", roomId: payload.roomId });
-      dispatchRoom({ type: "SET_ID", id: payload.socketId });
+    SocketIOService.io.on("roomIdProposal", payload => {
+      dispatchRoom({
+        type: "CONNECT_TO_ROOM",
+        payload: { roomId: payload.roomId },
+      });
+      dispatchRoom({ type: "SET_ID", payload: { id: payload.socketId } });
     });
 
-    socket.io.on("playerJoin", payload => {
+    SocketIOService.io.on("playerJoin", payload => {
       dispatchRoom({
         type: "SET_PLAYER_NICKNAME",
-        playerNickname: payload.playerNickname,
+        payload: { playerNickname: payload.playerNickname },
       });
     });
 
-    socket.io.on("requestData", () => {
-      socket.io.emit("gameData", {
+    SocketIOService.io.on("requestData", () => {
+      SocketIOService.io.emit("gameData", {
         hostNickname: nickname,
         roomId: roomState.roomId,
       });
-      dispatchRoom({ type: "SET_HOST_NICKNAME", hostNickname: nickname });
+      dispatchRoom({ type: "SET_HOST_NICKNAME", payload: { hostNickname: nickname} });
     });
 
-    socket.io.on("gameStart", () => {
+    SocketIOService.io.on("gameStart", () => {
       dispatchRoom({ type: "FREEZE" });
-      socket.io.removeListener("disconnect");
+      SocketIOService.io.removeListener("disconnect");
       navigate(`/game?roomId=${roomState.roomId}`);
     });
 
-    socket.io.on("playerQuit", () => {
+    SocketIOService.io.on("playerQuit", () => {
       dispatchRoom({ type: "PLAYER_QUIT" });
     });
 
     return () => {
-      socket.io.off();
+      SocketIOService.io.off();
     };
   }, [nickname, roomState]);
 
   useEffect(() => {
     dispatchRoom({ type: "RESET" });
-    socket.connectToServer();
+    SocketIOService.connectToServer();
 
     return () => {
-      socket.disconnectFromServer()();
+      SocketIOService.disconnectFromServer()();
       dispatchRoom({ type: "RESET" });
-      socket.io.off();
+      SocketIOService.io.off();
     };
   }, []);
 
   const handleStart = () => {
-    socket.io.emit("requestStart", { roomId: roomState.roomId });
+    SocketIOService.io.emit("requestStart", { roomId: roomState.roomId });
   };
 
   function handleCodeCopy() {
-    const textToCopy = roomState.roomId;
+    const code = roomState.roomId;
 
     navigator.clipboard
-      .writeText(textToCopy)
+      .writeText(code)
       .then(() => {
-        toast.info("Code copied")
+        toast.info("Code copied");
       })
       .catch(err => {
         console.error("Failed to copy text: ", err);
@@ -104,6 +107,7 @@ export default function LobbyCard() {
             name="nickname"
             value={nickname}
             onChange={e => setNickname(e.target.value)}
+            placeholder="Nickname here"
           />
           <TextInput
             label="Game code"
@@ -115,7 +119,8 @@ export default function LobbyCard() {
           <TextInput
             label="Oponnent"
             name="oponnent"
-            value={roomState.playerNickname || "-"}
+            value={roomState.playerNickname}
+            placeholder="Opponent's nickname will be displayed here"
             disabled
           />
         </InputsWrapper>
@@ -123,7 +128,7 @@ export default function LobbyCard() {
           <Button
             $small
             onClick={handleStart}
-            disabled={!(roomState.connectedToRoom && roomState.playerNickname)}
+            disabled={!(roomState.connectedToRoom && roomState.playerNickname && nickname)}
           >
             Start game
           </Button>

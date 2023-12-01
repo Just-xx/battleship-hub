@@ -5,7 +5,7 @@ import {
   ShipInfoItem,
   ShipInfoWrapper,
   ShipInfoItemStrucks,
-  ShipHitMarkStruck
+  ShipHitMarkStruck,
 } from "./ShipInfo.styles";
 import { RoomContext } from "../../../contexts/RoomContext";
 import { useContext } from "react";
@@ -22,20 +22,19 @@ import ships_big_o from "../../../assets/ships_o/big.svg";
 
 export default function ShipInfo({ $secondary }) {
   const [shipsInfo, setShipsInfo] = useState([]);
-  const [roomState] = useContext(RoomContext);
+  const { roomState } = useContext(RoomContext);
 
   useEffect(() => {
     if (!$secondary) {
       setShipsInfo(
-        roomState.struckedShips.map(ship => ({
+        roomState.patterns.own.map(ship => ({
           id: ship.id,
           strucks: ship.strucks,
           type: ship.type,
         }))
       );
-    }
-    else {
-      setShipsInfo(roomState.struckedOponnentShips);
+    } else {
+      setShipsInfo(roomState.patterns.opponent);
     }
   }, [roomState]);
 
@@ -62,9 +61,9 @@ export default function ShipInfo({ $secondary }) {
               <ShipInfoWrapper key={ship.id}>
                 <ShipInfoItem $secondary src={ships.big} />
                 <ShipInfoItemStrucks $big>
-                  {Array.from({ length: ship.strucks }, () => 1).map(((n, i) => (
+                  {Array.from({ length: ship.strucks }, () => 1).map((n, i) => (
                     <ShipHitMarkStruck key={i}></ShipHitMarkStruck>
-                  )))}
+                  ))}
                 </ShipInfoItemStrucks>
               </ShipInfoWrapper>
             )
@@ -77,9 +76,9 @@ export default function ShipInfo({ $secondary }) {
               <ShipInfoWrapper key={ship.id}>
                 <ShipInfoItem $secondary src={ships.medium} />
                 <ShipInfoItemStrucks $medium>
-                  {Array.from({ length: ship.strucks }, () => 1).map(((n, i) => (
+                  {Array.from({ length: ship.strucks }, () => 1).map((n, i) => (
                     <ShipHitMarkStruck key={i}></ShipHitMarkStruck>
-                  )))}
+                  ))}
                 </ShipInfoItemStrucks>
               </ShipInfoWrapper>
             )
@@ -92,9 +91,9 @@ export default function ShipInfo({ $secondary }) {
               <ShipInfoWrapper key={ship.id}>
                 <ShipInfoItem $secondary src={ships.regular} />
                 <ShipInfoItemStrucks $regular>
-                  {Array.from({ length: ship.strucks }, () => 1).map(((n, i) => (
+                  {Array.from({ length: ship.strucks }, () => 1).map((n, i) => (
                     <ShipHitMarkStruck key={i}></ShipHitMarkStruck>
-                  )))}
+                  ))}
                 </ShipInfoItemStrucks>
               </ShipInfoWrapper>
             )
@@ -107,9 +106,9 @@ export default function ShipInfo({ $secondary }) {
               <ShipInfoWrapper key={ship.id}>
                 <ShipInfoItem $secondary src={ships.small} />
                 <ShipInfoItemStrucks $small>
-                  {Array.from({ length: ship.strucks }, () => 1).map(((n, i) => (
+                  {Array.from({ length: ship.strucks }, () => 1).map((n, i) => (
                     <ShipHitMarkStruck key={i}></ShipHitMarkStruck>
-                  )))}
+                  ))}
                 </ShipInfoItemStrucks>
               </ShipInfoWrapper>
             )

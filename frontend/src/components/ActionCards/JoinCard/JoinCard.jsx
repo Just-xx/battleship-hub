@@ -11,7 +11,7 @@ import {
 } from "../CardUtils";
 import { Button, LinkButton } from "../../Button/Button";
 import { AnimatePresence } from "framer-motion";
-import { socket } from "../../../utils/socket";
+import SocketIOService from "../../../services/SocketIOService";
 import { RoomContext } from "../../../contexts/RoomContext";
 import { useNavigate } from "react-router-dom";
 
@@ -21,85 +21,94 @@ export default function LobbyCard() {
 
   const [roomIdSnapshot, setRoomIdSnapshot] = useState("");
 
-  const [nickname, setNickname] = useState("ABCD");
+  const [nickname, setNickname] = useState("");
   const [inputRoomId, setInputRoomId] = useState("");
 
   const navigate = useNavigate();
-  const [roomState, dispatchRoom] = useContext(RoomContext);
+  const {roomState, dispatchRoom} = useContext(RoomContext);
 
   useEffect(() => {
-    socket.io.on("connect", () => {
+    SocketIOService.io.on("connect", () => {
       dispatchRoom({ type: "RESET" });
       dispatchRoom({ type: "SET_PLAYER_USERTYPE" });
       dispatchRoom({ type: "CONNECT" });
     });
 
-    socket.io.on("disconnect", () => {
+    SocketIOService.io.on("disconnect", () => {
       dispatchRoom({ type: "RESET" });
       setSuccesInfoShown(false);
     });
 
-    socket.io.on("requestData", () => {
-      socket.io.emit("gameData", {
+    SocketIOService.io.on("requestData", () => {
+      SocketIOService.io.emit("gameData", {
         playerNickname: nickname,
         roomId: roomState.roomId,
       });
-      dispatchRoom({ type: "SET_PLAYER_NICKNAME", playerNickname: nickname });
+      dispatchRoom({
+        type: "SET_PLAYER_NICKNAME",
+        payload: { playerNickname: nickname },
+      });
     });
-    
-    socket.io.on("hostInfo", payload => {
-      dispatchRoom({ type: "SET_HOST_NICKNAME", hostNickname: payload.hostNickname });
-    })
 
-    socket.io.on("roomId", payload => {
+    SocketIOService.io.on("hostInfo", payload => {
+      dispatchRoom({
+        type: "SET_HOST_NICKNAME",
+        payload: { hostNickname: payload.hostNickname },
+      });
+    });
+
+    SocketIOService.io.on("roomIdProposal", payload => {
       if (payload.success) {
         setSuccesInfoShown(true);
         setFailInfoShown(false);
-        dispatchRoom({ type: "CONNECT_TO_ROOM", roomId: payload.roomId });
-        dispatchRoom({ type: "SET_ID", id: payload.socketId });
+        dispatchRoom({
+          type: "CONNECT_TO_ROOM",
+          payload: { roomId: payload.roomId },
+        });
+        dispatchRoom({ type: "SET_ID", payload: { id: payload.socketId } });
       } else {
         setSuccesInfoShown(false);
         setFailInfoShown(true);
         setRoomIdSnapshot(inputRoomId);
-        socket.disconnectFromServer()();
+        SocketIOService.disconnectFromServer()();
       }
     });
 
-    socket.io.on("gameStart", payload => {
+    SocketIOService.io.on("gameStart", payload => {
       dispatchRoom({ type: "FREEZE" });
-      socket.io.off("disconnect");
+      SocketIOService.io.off("disconnect");
       navigate(`/game?roomId=${roomState.roomId}`);
     });
 
-    socket.io.on("hostQuit", () => {
+    SocketIOService.io.on("hostQuit", () => {
       setSuccesInfoShown(false);
-      socket.disconnectFromServer()();
+      SocketIOService.disconnectFromServer()();
     });
 
     return () => {
-      socket.io.off()
+      SocketIOService.io.off();
     };
   }, [nickname, inputRoomId, successInfoShown, roomState]);
 
   useEffect(() => {
     dispatchRoom({ type: "RESET" });
     return () => {
-      socket.disconnectFromServer()();
+      SocketIOService.disconnectFromServer()();
       dispatchRoom({ type: "RESET" });
-      socket.io.off();
+      SocketIOService.io.off();
     };
   }, []);
 
   const handleJoin = () => {
-    socket.connectToServer();
-    socket.io.emit("joinRoom", {
+    SocketIOService.connectToServer();
+    SocketIOService.io.emit("joinRoom", {
       roomId: inputRoomId,
       playerNickname: nickname,
     });
   };
 
   const handleQuit = () => {
-    socket.disconnectFromServer()();
+    SocketIOService.disconnectFromServer()();
   };
 
   return (
@@ -113,8 +122,10 @@ export default function LobbyCard() {
             value={nickname}
             onChange={e => setNickname(e.target.value)}
             disabled={roomState.connected}
+            placeholder="Nickname here"
           />
           <TextInput
+            placeholder="Game code here"
             label="Game code"
             name="gamecode"
             value={inputRoomId}
@@ -145,7 +156,7 @@ export default function LobbyCard() {
           )}
         </AnimatePresence>
         <ButtonsWrapper>
-          <Button $small onClick={handleJoin} disabled={roomState.connected}>
+          <Button $small onClick={handleJoin} disabled={roomState.connected || !inputRoomId.length || !nickname.length}>
             Join game
           </Button>
           {roomState.connectedToRoom ? (

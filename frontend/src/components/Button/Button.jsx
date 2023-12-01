@@ -17,6 +17,7 @@ const secondaryHover = (props) => css`
 const small = (props) => css`
   font-size: 0.888rem;
   font-weight: 700;
+  padding: 24px 48px;
 `;
 
 export const Button = styled.button`

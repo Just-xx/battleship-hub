@@ -1,10 +1,6 @@
 import React, { useRef, useState } from "react";
-import logo from "../../assets/logo.png";
 import {
   Wrapper,
-  Logo,
-  LogoImg,
-  LogoText,
   NavigationWrapper,
   NavLink,
   Hamburger,
@@ -12,6 +8,7 @@ import {
   AngleIcon
 } from "./Header.styles";
 import { AnimatePresence, motion } from "framer-motion";
+import Logo from "../Logo/Logo";
 
 export default function Header() {
   const [hamburgerOpen, setHamburgerOpen] = useState(false);
@@ -19,14 +16,7 @@ export default function Header() {
 
   return (
     <Wrapper>
-      <Logo>
-        <LogoImg src={logo} alt="" />
-        <LogoText>
-          Battleships
-          <br />
-          Hub
-        </LogoText>
-      </Logo>
+      <Logo />
       <AnimatePresence mode="wait">
         {hamburgerOpen ? (
           <Hamburger
@@ -54,7 +44,7 @@ export default function Header() {
       </AnimatePresence>
       <NavigationWrapper>
         <NavLink to="/">Home</NavLink>
-        <NavLink to="/about">About</NavLink>
+        <NavLink to="#">About</NavLink>
         <NavLink to="/play">Play</NavLink>
       </NavigationWrapper>
       <AnimatePresence>
@@ -71,7 +61,7 @@ export default function Header() {
           >
             <AngleIcon className="fa-solid fa-angle-up"></AngleIcon>
             <NavLink to="/">Home</NavLink>
-            <NavLink to="/about">About</NavLink>
+            <NavLink to="#">About</NavLink>
             <NavLink to="/play">Play</NavLink>
           </MobileNavigationMenu>
         )}

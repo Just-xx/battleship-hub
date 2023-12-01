@@ -10,27 +10,6 @@ export const Wrapper = styled.header`
   position: relative;
 `;
 
-export const Logo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  cursor: pointer;
-  user-select: none;
-`;
-
-export const LogoText = styled.span`
-  font-size: 0.777rem;
-  line-height: 110%;
-  font-weight: 900;
-  color: ${({ theme }) => theme.primary};
-`;
-
-export const LogoImg = styled.img`
-  object-fit: contain;
-  height: 2rem;
-  opacity: 0.9;
-`;
-
 export const NavigationWrapper = styled.div`
   display: flex;
   gap: 64px;
