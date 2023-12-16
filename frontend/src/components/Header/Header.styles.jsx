@@ -25,6 +25,10 @@ export const NavLink = styled(Link)`
   font-weight: 500;
   font-size: 1rem;
 
+  opacity: ${props => props.$inactive ? ".5" : "1"};
+  pointer-events: ${props => props.$inactive ? "none" : "all"};
+
+
   @media screen and (max-width: 700px) {
     font-weight: 600;
   }

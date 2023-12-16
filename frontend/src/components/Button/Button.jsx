@@ -64,4 +64,7 @@ export const Button = styled.button`
 export const LinkButton = styled(Button).attrs({ as: Link })`
   text-align: center;
   text-decoration: none;
+
+  opacity: ${props => props.$inactive ? ".5" : "1"};
+  pointer-events: ${props => props.$inactive ? "none" : "all"};
 `;

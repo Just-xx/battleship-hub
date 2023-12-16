@@ -44,7 +44,7 @@ export default function Header() {
       </AnimatePresence>
       <NavigationWrapper>
         <NavLink to="/">Home</NavLink>
-        <NavLink to="#">About</NavLink>
+        <NavLink to="#" $inactive>About</NavLink>
         <NavLink to="/play">Play</NavLink>
       </NavigationWrapper>
       <AnimatePresence>

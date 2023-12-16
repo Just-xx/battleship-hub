@@ -25,7 +25,7 @@ export default function Hero() {
         </TextWrapper>
         <ButtonsWrapper>
           <LinkButton to="/play">Play now</LinkButton>
-          <LinkButton to="#rules" $secondary>
+          <LinkButton to="#rules" $secondary $inactive>
             Rules
           </LinkButton>
         </ButtonsWrapper>
